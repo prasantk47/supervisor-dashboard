@@ -33,6 +33,10 @@ export const routes: Routes = [
       { path: 'polls', loadComponent: () => import('./pages/polls/polls.component').then(m => m.PollsComponent) },
       { path: 'committee', loadComponent: () => import('./pages/committee/committee.component').then(m => m.CommitteeComponent) },
       { path: 'settings', loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent) },
+      // Super Admin pages
+      { path: 'societies', loadComponent: () => import('./pages/societies/societies.component').then(m => m.SocietiesComponent) },
+      { path: 'daily-help-setup', loadComponent: () => import('./pages/daily-help-setup/daily-help-setup.component').then(m => m.DailyHelpSetupComponent) },
+      { path: 'mass-upload', loadComponent: () => import('./pages/mass-upload/mass-upload.component').then(m => m.MassUploadComponent) },
     ]
   },
   { path: '**', redirectTo: 'dashboard' }

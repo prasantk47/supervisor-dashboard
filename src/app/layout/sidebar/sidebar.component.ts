@@ -17,7 +17,7 @@ interface NavItem {
   template: `
     <aside class="sidebar" [class.collapsed]="collapsed">
       <div class="sidebar-header">
-        <h2 *ngIf="!collapsed">Vistr+ Supervisor</h2>
+        <h2 *ngIf="!collapsed">{{ sidebarTitle }}</h2>
         <span *ngIf="collapsed">V+</span>
         <button class="toggle-btn" (click)="collapsed = !collapsed">
           <span>{{ collapsed ? '>' : '<' }}</span>
@@ -104,8 +104,22 @@ interface NavItem {
 export class SidebarComponent {
   collapsed = false;
   userRole = '';
+  sidebarTitle = 'Vistr+';
 
-  allNavItems: NavItem[] = [
+  // Super Admin: SaaS-level management
+  superAdminNav: NavItem[] = [
+    { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
+    { label: 'Societies', icon: '\u{1F3D8}', route: '/societies' },
+    { label: 'Society Setup', icon: '\u{2699}', route: '/settings' },
+    { label: 'Staff', icon: '\u{1F464}', route: '/staff' },
+    { label: 'Daily Help Setup', icon: '\u{1F9F9}', route: '/daily-help-setup' },
+    { label: 'Mass Upload', icon: '\u{1F4E4}', route: '/mass-upload' },
+    { label: 'Residents', icon: '\u{1F3E0}', route: '/residents' },
+    { label: 'Units', icon: '\u{1F3E2}', route: '/units' },
+  ];
+
+  // Supervisor: Society operational management
+  supervisorNav: NavItem[] = [
     { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
     { label: 'Visitors', icon: '\u{1F6B6}', route: '/visitors' },
     { label: 'Daily Help', icon: '\u{1F9F9}', route: '/daily-help' },
@@ -124,10 +138,9 @@ export class SidebarComponent {
     { label: 'Notices', icon: '\u{1F4E2}', route: '/notices' },
     { label: 'Amenities', icon: '\u{1F3CA}', route: '/amenities' },
     { label: 'Directory', icon: '\u{1F4D6}', route: '/directory' },
-    { label: 'Billing', icon: '\u{1F4B0}', route: '/billing', roles: ['super_admin', 'admin', 'society_admin'] },
     { label: 'Polls', icon: '\u{1F5F3}', route: '/polls' },
     { label: 'Committee', icon: '\u{1F465}', route: '/committee' },
-    { label: 'Settings', icon: '\u{2699}', route: '/settings', roles: ['super_admin', 'admin', 'society_admin'] },
+    { label: 'Settings', icon: '\u{2699}', route: '/settings' },
   ];
 
   navItems: NavItem[] = [];
@@ -135,9 +148,13 @@ export class SidebarComponent {
   constructor(private authService: AuthService) {
     this.authService.currentUser$.subscribe(user => {
       this.userRole = user?.role || '';
-      this.navItems = this.allNavItems.filter(item =>
-        !item.roles || item.roles.includes(this.userRole)
-      );
+      if (this.userRole === 'super_admin') {
+        this.sidebarTitle = 'Vistr+ Admin';
+        this.navItems = this.superAdminNav;
+      } else {
+        this.sidebarTitle = 'Vistr+ Supervisor';
+        this.navItems = this.supervisorNav;
+      }
     });
   }
 
