@@ -1,0 +1,32 @@
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { HeaderComponent } from './header/header.component';
+
+@Component({
+  selector: 'app-layout',
+  standalone: true,
+  imports: [RouterOutlet, SidebarComponent, HeaderComponent],
+  template: `
+    <div class="layout">
+      <app-sidebar></app-sidebar>
+      <div class="main-content">
+        <app-header></app-header>
+        <div class="page-content">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .layout { display: flex; min-height: 100vh; }
+    .main-content {
+      flex: 1;
+      margin-left: 250px;
+      transition: margin-left 0.3s;
+      background: #f5f5f5;
+    }
+    .page-content { padding: 24px; }
+  `]
+})
+export class LayoutComponent {}
