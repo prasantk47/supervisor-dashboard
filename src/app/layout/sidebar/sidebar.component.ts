@@ -7,7 +7,7 @@ interface NavItem {
   label: string;
   icon: string;
   route: string;
-  children?: NavItem[];
+  roles?: string[];
 }
 
 @Component({
@@ -103,8 +103,9 @@ interface NavItem {
 })
 export class SidebarComponent {
   collapsed = false;
+  userRole = '';
 
-  navItems: NavItem[] = [
+  allNavItems: NavItem[] = [
     { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
     { label: 'Visitors', icon: '\u{1F6B6}', route: '/visitors' },
     { label: 'Daily Help', icon: '\u{1F9F9}', route: '/daily-help' },
@@ -123,13 +124,22 @@ export class SidebarComponent {
     { label: 'Notices', icon: '\u{1F4E2}', route: '/notices' },
     { label: 'Amenities', icon: '\u{1F3CA}', route: '/amenities' },
     { label: 'Directory', icon: '\u{1F4D6}', route: '/directory' },
-    { label: 'Billing', icon: '\u{1F4B0}', route: '/billing' },
+    { label: 'Billing', icon: '\u{1F4B0}', route: '/billing', roles: ['super_admin', 'admin', 'society_admin'] },
     { label: 'Polls', icon: '\u{1F5F3}', route: '/polls' },
     { label: 'Committee', icon: '\u{1F465}', route: '/committee' },
-    { label: 'Settings', icon: '\u{2699}', route: '/settings' },
+    { label: 'Settings', icon: '\u{2699}', route: '/settings', roles: ['super_admin', 'admin', 'society_admin'] },
   ];
 
-  constructor(private authService: AuthService) {}
+  navItems: NavItem[] = [];
+
+  constructor(private authService: AuthService) {
+    this.authService.currentUser$.subscribe(user => {
+      this.userRole = user?.role || '';
+      this.navItems = this.allNavItems.filter(item =>
+        !item.roles || item.roles.includes(this.userRole)
+      );
+    });
+  }
 
   logout() {
     this.authService.logout();

@@ -106,6 +106,13 @@ export class LoginComponent {
       next: (res) => {
         this.loading = false;
         if (res.success) {
+          const role = res.data.user.role;
+          const allowed = ['super_admin', 'supervisor', 'admin', 'society_admin', 'manager'];
+          if (!allowed.includes(role)) {
+            this.authService.logout();
+            this.error = 'Access denied. This dashboard is for supervisors and admins only.';
+            return;
+          }
           this.router.navigate(['/dashboard']);
         }
       },
