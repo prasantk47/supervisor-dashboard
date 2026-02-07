@@ -37,6 +37,12 @@ export const routes: Routes = [
       { path: 'societies', loadComponent: () => import('./pages/societies/societies.component').then(m => m.SocietiesComponent) },
       { path: 'daily-help-setup', loadComponent: () => import('./pages/daily-help-setup/daily-help-setup.component').then(m => m.DailyHelpSetupComponent) },
       { path: 'mass-upload', loadComponent: () => import('./pages/mass-upload/mass-upload.component').then(m => m.MassUploadComponent) },
+      // New feature pages
+      { path: 'qr-code', loadComponent: () => import('./pages/qr-code/qr-code.component').then(m => m.QrCodeComponent) },
+      { path: 'emergency-contacts', loadComponent: () => import('./pages/emergency-contacts/emergency-contacts.component').then(m => m.EmergencyContactsComponent) },
+      { path: 'community-setup', loadComponent: () => import('./pages/community-setup/community-setup.component').then(m => m.CommunitySetupComponent) },
+      { path: 'security-shifts', loadComponent: () => import('./pages/security-shifts/security-shifts.component').then(m => m.SecurityShiftsComponent) },
+      { path: 'local-services', loadComponent: () => import('./pages/local-services/local-services.component').then(m => m.LocalServicesComponent) },
     ]
   },
   { path: '**', redirectTo: 'dashboard' }
