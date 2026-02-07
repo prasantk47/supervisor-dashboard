@@ -13,7 +13,7 @@ import { AuthService, User } from '../../core/services/auth.service';
       </div>
       <div class="header-right">
         <div class="user-info" *ngIf="user">
-          <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+          <span class="user-name">{{ user.fullName || (user.firstName + ' ' + user.lastName) }}</span>
           <span class="user-role">{{ user.role }}</span>
         </div>
       </div>

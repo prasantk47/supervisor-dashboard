@@ -18,9 +18,9 @@ import { AuthService } from '../core/services/auth.service';
 
         <form (ngSubmit)="onLogin()" class="login-form">
           <div class="form-group">
-            <label>Mobile Number</label>
-            <input type="text" [(ngModel)]="mobileNumber" name="mobile"
-                   placeholder="Enter mobile number" required maxlength="10">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="email" name="email"
+                   placeholder="Enter email address" required>
           </div>
 
           <div class="form-group">
@@ -92,7 +92,7 @@ import { AuthService } from '../core/services/auth.service';
   `]
 })
 export class LoginComponent {
-  mobileNumber = '';
+  email = '';
   password = '';
   loading = false;
   error = '';
@@ -102,7 +102,7 @@ export class LoginComponent {
   onLogin() {
     this.loading = true;
     this.error = '';
-    this.authService.login(this.mobileNumber, this.password).subscribe({
+    this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         this.loading = false;
         if (res.success) {

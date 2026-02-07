@@ -8,18 +8,25 @@ export interface User {
   id: string;
   firstName: string;
   lastName: string;
+  fullName: string;
   email: string;
-  mobileNumber: string;
+  phone?: string;
   role: string;
   societyId: string;
+  societyName?: string;
   profileImage?: string;
 }
 
 export interface AuthResponse {
   success: boolean;
-  token: string;
-  refreshToken?: string;
-  user: User;
+  message: string;
+  data: {
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+    redirect: string;
+    dashboardType: string;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -35,14 +42,14 @@ export class AuthService {
     }
   }
 
-  login(mobileNumber: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, { mobileNumber, password }).pipe(
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, { email, password }).pipe(
       tap(res => {
         if (res.success) {
-          localStorage.setItem('token', res.token);
-          if (res.refreshToken) localStorage.setItem('refreshToken', res.refreshToken);
-          localStorage.setItem('user', JSON.stringify(res.user));
-          this.currentUserSubject.next(res.user);
+          localStorage.setItem('token', res.data.accessToken);
+          if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          this.currentUserSubject.next(res.data.user);
         }
       })
     );
