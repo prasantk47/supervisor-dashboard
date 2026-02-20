@@ -39,13 +39,13 @@ import { ApiService } from '../../core/services/api.service';
             <tr *ngFor="let item of items">
               <td>{{ item.user?.firstName || item.firstName || '' }} {{ item.user?.lastName || item.lastName || '' }}</td>
               <td>{{ item.user?.mobileNumber || item.mobileNumber || item.phone || '-' }}</td>
-              <td>{{ item.unit?.unitNumber || item.unitNumber || item.unit || '-' }}</td>
+              <td>{{ item.unit?.name || item.unit?.unitNumber || item.unitNumber || '-' }}{{ item.unit?.floor ? ', ' + item.unit.floor : '' }}{{ item.unit?.block ? ', ' + item.unit.block : '' }}</td>
               <td>{{ item.role || item.user?.role || '-' }}</td>
               <td><span class="badge" [ngClass]="'badge-' + (item.status || '').toLowerCase()">{{ item.status || '-' }}</span></td>
               <td class="actions">
-                <button class="btn btn-success btn-sm" *ngIf="item.status === 'PENDING'" (click)="approve(item)">Approve</button>
-                <button class="btn btn-danger btn-sm" *ngIf="item.status === 'PENDING'" (click)="reject(item)">Reject</button>
-                <button class="btn btn-danger btn-sm" *ngIf="item.status === 'APPROVED'" (click)="remove(item)">Remove</button>
+                <button class="btn btn-success btn-sm" *ngIf="isStatus(item, 'PENDING')" (click)="approve(item)">Approve</button>
+                <button class="btn btn-danger btn-sm" *ngIf="isStatus(item, 'PENDING')" (click)="reject(item)">Reject</button>
+                <button class="btn btn-danger btn-sm" *ngIf="isStatus(item, 'APPROVED')" (click)="remove(item)">Remove</button>
               </td>
             </tr>
             <tr *ngIf="items.length === 0">
@@ -143,22 +143,29 @@ export class ResidentsComponent implements OnInit {
     }
   }
 
+  isStatus(item: any, status: string): boolean {
+    return (item.status || '').toUpperCase() === status.toUpperCase();
+  }
+
   approve(item: any): void {
-    this.api.put<any>(`/residents/${item.id}/approve`).subscribe({
+    const id = item.userRoleId || item.id;
+    this.api.put<any>(`/residents/${id}/approve`).subscribe({
       next: () => this.loadData()
     });
   }
 
   reject(item: any): void {
     if (!confirm('Reject this resident?')) return;
-    this.api.put<any>(`/residents/${item.id}/reject`).subscribe({
+    const id = item.userRoleId || item.id;
+    this.api.put<any>(`/residents/${id}/reject`).subscribe({
       next: () => this.loadData()
     });
   }
 
   remove(item: any): void {
     if (!confirm('Remove this resident?')) return;
-    this.api.put<any>(`/residents/${item.id}/remove`).subscribe({
+    const id = item.userRoleId || item.id;
+    this.api.delete<any>(`/residents/${id}`).subscribe({
       next: () => this.loadData()
     });
   }
