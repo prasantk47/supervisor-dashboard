@@ -234,6 +234,8 @@ export class SidebarComponent {
 
   supervisorNav: NavItem[] = [
     { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
+    { label: 'Residents', icon: '\u{1F3E0}', route: '/residents' },
+    { label: 'Units', icon: '\u{1F3E2}', route: '/units' },
     { label: 'Visitors', icon: '\u{1F6B6}', route: '/visitors' },
     { label: 'Daily Help', icon: '\u{1F9F9}', route: '/daily-help' },
     { label: 'Local Services', icon: '\u{1F527}', route: '/local-services' },
@@ -250,8 +252,6 @@ export class SidebarComponent {
     { label: 'Incidents', icon: '\u{26A0}', route: '/incidents' },
     { label: 'Notes to Guard', icon: '\u{1F4CB}', route: '/notes-to-guard' },
     { label: 'Activity Logs', icon: '\u{1F4C3}', route: '/activity-logs' },
-    { label: 'Residents', icon: '\u{1F3E0}', route: '/residents' },
-    { label: 'Units', icon: '\u{1F3E2}', route: '/units' },
     { label: 'Community Setup', icon: '\u{1F3D7}', route: '/community-setup' },
     { label: 'Notices', icon: '\u{1F4E2}', route: '/notices' },
     { label: 'Amenities', icon: '\u{1F3CA}', route: '/amenities' },
