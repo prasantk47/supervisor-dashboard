@@ -414,6 +414,8 @@ export class DashboardComponent implements OnInit {
           const d = res.data;
           const s = d.stats || d;
           this.stats = [
+            { icon: '\u{1F3E0}', label: 'Total Residents', value: s.totalResidents ?? 0 },
+            { icon: '\u{1F514}', label: 'Pending Approvals', value: s.pendingResidents ?? 0 },
             { icon: '\u{1F6B6}', label: 'Visitors Today', value: s.visitorsToday ?? s.todayVisitors ?? 0 },
             { icon: '\u{1F4DD}', label: 'Open Complaints', value: s.openComplaints ?? 0 },
             { icon: '\u{1F6A8}', label: 'Active Alerts', value: s.activeAlerts ?? 0 },
