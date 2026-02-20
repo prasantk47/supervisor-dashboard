@@ -19,14 +19,15 @@ import { HeaderComponent } from './header/header.component';
     </div>
   `,
   styles: [`
-    .layout { display: flex; min-height: 100vh; }
+    .layout { display: flex; min-height: 100vh; background: #050508; }
     .main-content {
       flex: 1;
-      margin-left: 250px;
-      transition: margin-left 0.3s;
-      background: #f5f5f5;
+      margin-left: 72px;
+      transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+      background: #0A0A10;
+      min-height: 100vh;
     }
-    .page-content { padding: 24px; }
+    .page-content { padding: 0; }
   `]
 })
 export class LayoutComponent {}

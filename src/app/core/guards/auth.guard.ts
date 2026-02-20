@@ -14,7 +14,7 @@ export const authGuard: CanActivateFn = () => {
   }
 
   const user = authService.currentUser;
-  if (!user || !ALLOWED_ROLES.includes(user.role)) {
+  if (!user || !ALLOWED_ROLES.includes((user.role || '').toLowerCase())) {
     authService.logout();
     return false;
   }

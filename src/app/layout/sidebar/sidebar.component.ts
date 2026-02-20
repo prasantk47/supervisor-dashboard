@@ -15,98 +15,212 @@ interface NavItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <aside class="sidebar" [class.collapsed]="collapsed">
-      <div class="sidebar-header">
-        <h2 *ngIf="!collapsed">{{ sidebarTitle }}</h2>
-        <span *ngIf="collapsed">V+</span>
-        <button class="toggle-btn" (click)="collapsed = !collapsed">
-          <span>{{ collapsed ? '>' : '<' }}</span>
-        </button>
+    <aside class="sidebar" [class.expanded]="expanded"
+           (mouseenter)="expanded = true" (mouseleave)="expanded = false">
+
+      <!-- Logo -->
+      <div class="logo-section">
+        <div class="logo-circle">
+          <span class="logo-letter">V</span>
+        </div>
+        <span class="logo-text" *ngIf="expanded">{{ sidebarTitle }}</span>
       </div>
 
+      <!-- Nav -->
       <nav class="sidebar-nav">
         <a *ngFor="let item of navItems"
            [routerLink]="item.route"
            routerLinkActive="active"
            class="nav-item"
            [title]="item.label">
+          <div class="active-indicator"></div>
           <span class="nav-icon">{{ item.icon }}</span>
-          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+          <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
         </a>
       </nav>
 
-      <div class="sidebar-footer">
-        <a class="nav-item logout" (click)="logout()" title="Logout">
-          <span class="nav-icon">&#x1F6AA;</span>
-          <span class="nav-label" *ngIf="!collapsed">Logout</span>
+      <!-- Profile -->
+      <div class="profile-section">
+        <div class="profile-avatar">
+          <span>{{ userInitial }}</span>
+        </div>
+        <div class="profile-info" *ngIf="expanded">
+          <span class="profile-name">{{ userName }}</span>
+          <span class="profile-role">{{ userRole }}</span>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <div class="logout-section">
+        <a class="nav-item logout-item" (click)="logout()" title="Logout">
+          <span class="nav-icon">\u{1F6AA}</span>
+          <span class="nav-label" *ngIf="expanded">Logout</span>
         </a>
       </div>
     </aside>
   `,
   styles: [`
     .sidebar {
-      width: 250px;
-      min-height: 100vh;
-      background: #1a1a2e;
-      color: #fff;
+      width: 72px;
+      height: 100vh;
+      background: #111118;
+      border-right: 1px solid rgba(200,169,125,0.10);
       display: flex;
       flex-direction: column;
-      transition: width 0.3s;
+      transition: width 0.3s cubic-bezier(.4,0,.2,1);
+      overflow: hidden;
       position: fixed;
       left: 0;
       top: 0;
       z-index: 100;
+      flex-shrink: 0;
     }
-    .sidebar.collapsed { width: 60px; }
-    .sidebar-header {
-      padding: 16px;
+    .sidebar.expanded { width: 230px; }
+
+    .logo-section {
+      padding: 18px 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      h2 { margin: 0; font-size: 16px; white-space: nowrap; }
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(200,169,125,0.10);
+      min-height: 64px;
     }
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 4px 8px;
+    .logo-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #C8A97D, #DFC59D);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
+    .logo-letter {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #050508;
+    }
+    .logo-text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #F2EDE4;
+      white-space: nowrap;
+      letter-spacing: -0.3px;
+    }
+
     .sidebar-nav {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 0;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
+
     .nav-item {
       display: flex;
       align-items: center;
-      padding: 10px 16px;
-      color: #ccc;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s;
       gap: 12px;
-      font-size: 14px;
-      &:hover { background: rgba(255,255,255,0.08); color: #fff; }
-      &.active { background: #16213e; color: #4fc3f7; border-left: 3px solid #4fc3f7; }
+      padding: 11px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #7D786E;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+      font-size: 13px;
+      font-family: 'Sora', sans-serif;
     }
-    .nav-icon { font-size: 18px; min-width: 24px; text-align: center; }
-    .nav-label { white-space: nowrap; }
-    .sidebar-footer {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 8px 0;
+    .nav-item:hover {
+      background: #1F1F28;
+      color: #C8C2B6;
     }
-    .logout:hover { color: #ff5252 !important; }
+    .nav-item.active {
+      background: rgba(200,169,125,0.08);
+      color: #C8A97D;
+    }
+    .active-indicator {
+      position: absolute;
+      left: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 3px;
+      border-radius: 2px;
+      background: transparent;
+      transition: background 0.2s;
+    }
+    .nav-item.active .active-indicator {
+      background: #C8A97D;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      min-width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .nav-label {
+      white-space: nowrap;
+      font-weight: 400;
+    }
+    .nav-item.active .nav-label { font-weight: 600; }
+
+    .profile-section {
+      padding: 14px;
+      border-top: 1px solid rgba(200,169,125,0.10);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .profile-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #C8A97D, #DFC59D);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #050508;
+    }
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .profile-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #F2EDE4;
+      white-space: nowrap;
+    }
+    .profile-role {
+      font-size: 10px;
+      color: #4A4740;
+      text-transform: capitalize;
+      white-space: nowrap;
+    }
+
+    .logout-section {
+      padding: 4px 10px 12px;
+    }
+    .logout-item:hover {
+      color: #F06868 !important;
+      background: rgba(240,104,104,0.08) !important;
+    }
   `]
 })
 export class SidebarComponent {
-  collapsed = false;
+  expanded = false;
   userRole = '';
+  userName = '';
+  userInitial = 'U';
   sidebarTitle = 'Vistr+';
 
-  // Super Admin: SaaS-level management
   superAdminNav: NavItem[] = [
     { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
     { label: 'Societies', icon: '\u{1F3D8}', route: '/societies' },
@@ -118,7 +232,6 @@ export class SidebarComponent {
     { label: 'Units', icon: '\u{1F3E2}', route: '/units' },
   ];
 
-  // Supervisor: Society operational management
   supervisorNav: NavItem[] = [
     { label: 'Dashboard', icon: '\u{1F4CA}', route: '/dashboard' },
     { label: 'Visitors', icon: '\u{1F6B6}', route: '/visitors' },
@@ -171,6 +284,8 @@ export class SidebarComponent {
     { label: 'SLA', icon: '\u{1F4C8}', route: '/sla' },
     { label: 'Staff Leave', icon: '\u{1F4C5}', route: '/staff-leave' },
     { label: 'Vendor', icon: '\u{1F3EA}', route: '/vendor' },
+    { label: 'Energy Meters', icon: '\u{26A1}', route: '/energy-meters' },
+    { label: 'Interest Groups', icon: '\u{1F465}', route: '/interest-groups' },
     { label: 'Settings', icon: '\u{2699}', route: '/settings' },
   ];
 
@@ -178,12 +293,14 @@ export class SidebarComponent {
 
   constructor(private authService: AuthService) {
     this.authService.currentUser$.subscribe(user => {
-      this.userRole = user?.role || '';
+      this.userRole = (user?.role || '').toLowerCase();
+      this.userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
+      this.userInitial = this.userName ? this.userName[0].toUpperCase() : 'U';
       if (this.userRole === 'super_admin') {
         this.sidebarTitle = 'Vistr+ Admin';
         this.navItems = this.superAdminNav;
       } else {
-        this.sidebarTitle = 'Vistr+ Supervisor';
+        this.sidebarTitle = 'Vistr+';
         this.navItems = this.supervisorNav;
       }
     });

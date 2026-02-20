@@ -106,7 +106,7 @@ export class LoginComponent {
       next: (res) => {
         this.loading = false;
         if (res.success) {
-          const role = res.data.user.role;
+          const role = (res.data.user.role || '').toLowerCase();
           const allowed = ['super_admin', 'supervisor', 'admin', 'society_admin', 'manager'];
           if (!allowed.includes(role)) {
             this.authService.logout();

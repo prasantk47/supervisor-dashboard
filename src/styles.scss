@@ -1,31 +1,62 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Fonts loaded async in index.html for better LCP */
+
+:root {
+  --void: #050508;
+  --bg: #0A0A10;
+  --surface: #111118;
+  --elevated: #18181F;
+  --raised: #1F1F28;
+  --gold: #C8A97D;
+  --gold-light: #DFC59D;
+  --gold-dim: rgba(200,169,125,0.08);
+  --gold-glow: rgba(200,169,125,0.12);
+  --gold-border: rgba(200,169,125,0.10);
+  --gold-border-mid: rgba(200,169,125,0.18);
+  --cream: #F2EDE4;
+  --ivory: #E8E1D5;
+  --text: #C8C2B6;
+  --text-mid: #7D786E;
+  --text-dim: #4A4740;
+  --emerald: #5CE0A0;
+  --emerald-bg: rgba(92,224,160,0.08);
+  --coral: #F06868;
+  --coral-bg: rgba(240,104,104,0.08);
+  --amber: #E8A84C;
+  --amber-bg: rgba(232,168,76,0.08);
+  --blue: #6B8AFF;
+  --blue-bg: rgba(107,138,255,0.08);
+  --lavender: #9D8AE8;
+  --lavender-bg: rgba(157,138,232,0.08);
 }
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
-  background: #f5f5f5;
-  color: #333;
+  font-family: 'Sora', 'Segoe UI', system-ui, sans-serif;
+  background: var(--void);
+  color: var(--text);
   font-size: 14px;
   line-height: 1.5;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+a { text-decoration: none; color: inherit; }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+.sans { font-family: 'Sora', 'Segoe UI', system-ui, sans-serif; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 2px; }
 
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: .6; }
+  50% { opacity: 1; }
 }

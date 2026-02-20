@@ -69,6 +69,8 @@ export const routes: Routes = [
       { path: 'sla', loadComponent: () => import('./pages/sla/sla.component').then(m => m.SlaComponent) },
       { path: 'staff-leave', loadComponent: () => import('./pages/staff-leave/staff-leave.component').then(m => m.StaffLeaveComponent) },
       { path: 'vendor', loadComponent: () => import('./pages/vendor/vendor.component').then(m => m.VendorComponent) },
+      { path: 'energy-meters', loadComponent: () => import('./pages/energy-meters/energy-meters.component').then(m => m.EnergyMetersComponent) },
+      { path: 'interest-groups', loadComponent: () => import('./pages/interest-groups/interest-groups.component').then(m => m.InterestGroupsComponent) },
     ]
   },
   { path: '**', redirectTo: 'dashboard' }

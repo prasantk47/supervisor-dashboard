@@ -18,6 +18,8 @@ import { ApiService } from '../../core/services/api.service';
         <button class="tab" [class.active]="activeTab === 'fiscal-years'" (click)="activeTab = 'fiscal-years'; loadFiscalYears()">Fiscal Years</button>
         <button class="tab" [class.active]="activeTab === 'bills'" (click)="activeTab = 'bills'; loadBillTypes()">Bill Generation</button>
         <button class="tab" [class.active]="activeTab === 'approvals'" (click)="activeTab = 'approvals'; loadApprovals()">Approvals</button>
+        <button class="tab" [class.active]="activeTab === 'reconciliation'" (click)="activeTab = 'reconciliation'; loadReconciliation()">Bank Reconciliation</button>
+        <button class="tab" [class.active]="activeTab === 'reports'" (click)="activeTab = 'reports'; loadScheduledReports()">Scheduled Reports</button>
       </div>
 
       <!-- FISCAL YEARS TAB -->
@@ -250,6 +252,121 @@ import { ApiService } from '../../core/services/api.service';
           </div>
         </div>
       </div>
+
+      <!-- BANK RECONCILIATION TAB -->
+      <div *ngIf="activeTab === 'reconciliation'">
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="card-header"><span>Upload Bank Statement</span></div>
+          <form (ngSubmit)="uploadBankStatement()">
+            <div class="form-grid">
+              <div class="form-group"><label>Bank Name</label><input type="text" [(ngModel)]="reconForm.bankName" name="rbname" placeholder="e.g. HDFC Bank"></div>
+              <div class="form-group"><label>Statement Period From</label><input type="date" [(ngModel)]="reconForm.periodFrom" name="rpfrom"></div>
+              <div class="form-group"><label>Statement Period To</label><input type="date" [(ngModel)]="reconForm.periodTo" name="rpto"></div>
+            </div>
+            <div class="form-group" style="margin-top: 8px;"><label>Statement File (CSV/Excel)</label><input type="file" (change)="onStatementFileChange($event)" accept=".csv,.xlsx,.xls"></div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary" [disabled]="saving">Upload & Reconcile</button></div>
+            <div class="error-msg" *ngIf="formError">{{ formError }}</div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span>Reconciliation Summary</span></div>
+          <div class="loading" *ngIf="loadingRecon">Loading...</div>
+          <div *ngIf="!loadingRecon && reconSummary">
+            <div class="status-grid" style="margin-bottom: 16px;">
+              <div class="status-item"><span class="detail-label">Total Collections:</span> {{ reconSummary.totalCollections || 0 }}</div>
+              <div class="status-item"><span class="detail-label">Matched:</span> {{ reconSummary.matched || 0 }}</div>
+              <div class="status-item"><span class="detail-label">Unmatched:</span> {{ reconSummary.unmatched || 0 }}</div>
+              <div class="status-item"><span class="detail-label">Discrepancy:</span> {{ reconSummary.discrepancy || 0 }}</div>
+            </div>
+          </div>
+          <table *ngIf="!loadingRecon && reconItems.length > 0">
+            <thead><tr><th>Date</th><th>Description</th><th>Bank Amount</th><th>System Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of reconItems">
+                <td>{{ r.date | date:'mediumDate' }}</td>
+                <td>{{ r.description || '-' }}</td>
+                <td>{{ r.bankAmount || 0 }}</td>
+                <td>{{ r.systemAmount || 0 }}</td>
+                <td>
+                  <span class="badge" [class.badge-active]="r.status === 'matched'" [class.badge-pending]="r.status === 'unmatched'" [class.badge-inactive]="r.status === 'discrepancy'">{{ r.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="empty" *ngIf="!loadingRecon && reconItems.length === 0">No reconciliation data. Upload a bank statement to begin.</div>
+        </div>
+      </div>
+
+      <!-- SCHEDULED REPORTS TAB -->
+      <div *ngIf="activeTab === 'reports'">
+        <div class="card form-card" *ngIf="showReportForm">
+          <h3>{{ editingReportId ? 'Edit Report Schedule' : 'Create Report Schedule' }}</h3>
+          <form (ngSubmit)="saveReport()">
+            <div class="form-grid">
+              <div class="form-group"><label>Report Name *</label><input type="text" [(ngModel)]="reportForm.name" name="rpname" required placeholder="e.g. Monthly Collection Report"></div>
+              <div class="form-group"><label>Report Type *</label>
+                <select [(ngModel)]="reportForm.type" name="rptype" required>
+                  <option value="">Select Type</option>
+                  <option value="collection">Collection Summary</option>
+                  <option value="defaulter">Defaulter Report</option>
+                  <option value="expense">Expense Report</option>
+                  <option value="maintenance">Maintenance Dues</option>
+                  <option value="visitor">Visitor Report</option>
+                  <option value="complaint">Complaint Report</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Frequency *</label>
+                <select [(ngModel)]="reportForm.frequency" name="rpfreq" required>
+                  <option value="">Select Frequency</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-top: 8px;">
+              <div class="form-group"><label>Send To (Email)</label><input type="email" [(ngModel)]="reportForm.email" name="rpemail" placeholder="admin@society.com"></div>
+              <div class="form-group"><label>Format</label>
+                <select [(ngModel)]="reportForm.format" name="rpfmt">
+                  <option value="pdf">PDF</option>
+                  <option value="excel">Excel</option>
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" [disabled]="saving">{{ editingReportId ? 'Update' : 'Create' }}</button>
+              <button type="button" class="btn btn-secondary" (click)="cancelReportForm()">Cancel</button>
+            </div>
+            <div class="error-msg" *ngIf="formError">{{ formError }}</div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span>Scheduled Reports</span><button class="btn btn-primary btn-sm" (click)="openReportForm()" *ngIf="!showReportForm">+ Add Schedule</button></div>
+          <div class="loading" *ngIf="loadingReports">Loading...</div>
+          <table *ngIf="!loadingReports">
+            <thead><tr><th>Name</th><th>Type</th><th>Frequency</th><th>Format</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of scheduledReports">
+                <td class="name-cell">{{ r.name }}</td>
+                <td><span class="code-badge">{{ r.type }}</span></td>
+                <td>{{ r.frequency }}</td>
+                <td>{{ r.format || 'pdf' }}</td>
+                <td>{{ r.email || '-' }}</td>
+                <td><span class="badge" [class.badge-active]="r.isActive !== false" [class.badge-inactive]="r.isActive === false">{{ r.isActive !== false ? 'Active' : 'Paused' }}</span></td>
+                <td>
+                  <button class="btn btn-sm btn-secondary" (click)="editReport(r)">Edit</button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteReport(r)">Delete</button>
+                </td>
+              </tr>
+              <tr *ngIf="scheduledReports.length === 0"><td colspan="7" class="empty">No scheduled reports. Create one above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -332,6 +449,20 @@ export class FinanceComponent implements OnInit {
   showHistoryForId = '';
   loadingHistory = false;
   approvalHistory: any[] = [];
+
+  // Bank Reconciliation
+  loadingRecon = false;
+  reconSummary: any = null;
+  reconItems: any[] = [];
+  reconForm = { bankName: '', periodFrom: '', periodTo: '' };
+  statementFile: File | null = null;
+
+  // Scheduled Reports
+  loadingReports = false;
+  scheduledReports: any[] = [];
+  showReportForm = false;
+  editingReportId: string | null = null;
+  reportForm: any = { name: '', type: '', frequency: '', email: '', format: 'pdf' };
 
   constructor(private api: ApiService) {}
 
@@ -485,6 +616,94 @@ export class FinanceComponent implements OnInit {
     this.api.get<any>(`/finance/approvals/${id}/history`).subscribe({
       next: (res) => { this.approvalHistory = res.data?.history || res.data || []; this.loadingHistory = false; },
       error: () => { this.approvalHistory = []; this.loadingHistory = false; }
+    });
+  }
+
+  // === BANK RECONCILIATION ===
+
+  loadReconciliation(): void {
+    this.loadingRecon = true;
+    this.api.get<any>('/finance/reconciliation').subscribe({
+      next: (res) => {
+        this.reconSummary = res.data?.summary || null;
+        this.reconItems = res.data?.items || res.data || [];
+        this.loadingRecon = false;
+      },
+      error: () => { this.reconSummary = null; this.reconItems = []; this.loadingRecon = false; }
+    });
+  }
+
+  onStatementFileChange(event: any): void {
+    this.statementFile = event.target?.files?.[0] || null;
+  }
+
+  uploadBankStatement(): void {
+    this.saving = true;
+    this.formError = '';
+    const formData = new FormData();
+    if (this.statementFile) formData.append('statement', this.statementFile);
+    formData.append('bankName', this.reconForm.bankName);
+    formData.append('periodFrom', this.reconForm.periodFrom);
+    formData.append('periodTo', this.reconForm.periodTo);
+
+    this.api.post<any>('/finance/reconciliation/upload', formData).subscribe({
+      next: () => { this.saving = false; this.loadReconciliation(); },
+      error: (err: any) => { this.saving = false; this.formError = err.error?.message || 'Failed to upload statement'; }
+    });
+  }
+
+  // === SCHEDULED REPORTS ===
+
+  loadScheduledReports(): void {
+    this.loadingReports = true;
+    this.api.get<any>('/finance/scheduled-reports').subscribe({
+      next: (res) => { this.scheduledReports = res.data?.reports || res.data || []; this.loadingReports = false; },
+      error: () => { this.scheduledReports = []; this.loadingReports = false; }
+    });
+  }
+
+  openReportForm(): void {
+    this.showReportForm = true;
+    this.editingReportId = null;
+    this.reportForm = { name: '', type: '', frequency: '', email: '', format: 'pdf' };
+    this.formError = '';
+  }
+
+  editReport(r: any): void {
+    this.showReportForm = true;
+    this.editingReportId = r.id;
+    this.reportForm = { name: r.name, type: r.type, frequency: r.frequency, email: r.email || '', format: r.format || 'pdf' };
+    this.formError = '';
+  }
+
+  cancelReportForm(): void {
+    this.showReportForm = false;
+    this.editingReportId = null;
+    this.formError = '';
+  }
+
+  saveReport(): void {
+    if (!this.reportForm.name || !this.reportForm.type || !this.reportForm.frequency) {
+      this.formError = 'Name, type and frequency are required';
+      return;
+    }
+    this.saving = true;
+    this.formError = '';
+
+    const req = this.editingReportId
+      ? this.api.put<any>(`/finance/scheduled-reports/${this.editingReportId}`, this.reportForm)
+      : this.api.post<any>('/finance/scheduled-reports', this.reportForm);
+
+    req.subscribe({
+      next: () => { this.saving = false; this.showReportForm = false; this.editingReportId = null; this.loadScheduledReports(); },
+      error: (err: any) => { this.saving = false; this.formError = err.error?.message || 'Failed to save report schedule'; }
+    });
+  }
+
+  deleteReport(r: any): void {
+    if (!confirm(`Delete report schedule "${r.name}"?`)) return;
+    this.api.delete<any>(`/finance/scheduled-reports/${r.id}`).subscribe({
+      next: () => this.loadScheduledReports()
     });
   }
 }
