@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Poll {
-  _id: string;
-  title: string;
-  status: string;
-  totalVotes: number;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-polls',
   standalone: true,
@@ -81,7 +73,7 @@ interface Poll {
   `]
 })
 export class PollsComponent implements OnInit {
-  items: Poll[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

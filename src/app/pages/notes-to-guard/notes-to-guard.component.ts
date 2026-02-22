@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface NoteToGuard {
-  _id: string;
-  note: string;
-  unit: string;
-  createdBy: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-notes-to-guard',
   standalone: true,
@@ -77,7 +69,7 @@ interface NoteToGuard {
   `]
 })
 export class NotesToGuardComponent implements OnInit {
-  items: NoteToGuard[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

@@ -3,13 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Notice {
-  _id: string;
-  title: string;
-  type: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-notices',
   standalone: true,
@@ -88,7 +81,7 @@ interface Notice {
   `]
 })
 export class NoticesComponent implements OnInit {
-  items: Notice[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;
@@ -143,8 +136,8 @@ export class NoticesComponent implements OnInit {
     console.log('Create new notice');
   }
 
-  view(item: Notice): void {
+  view(item: any): void {
     // TODO: Open detail view dialog/modal
-    console.log('View notice:', item._id);
+    console.log('View notice:', item.id);
   }
 }

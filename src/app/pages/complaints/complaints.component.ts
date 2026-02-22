@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Complaint {
-  _id: string;
-  type: string;
-  message: string;
-  status: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-complaints',
   standalone: true,
@@ -90,7 +82,7 @@ interface Complaint {
   `]
 })
 export class ComplaintsComponent implements OnInit {
-  items: Complaint[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;
@@ -140,13 +132,13 @@ export class ComplaintsComponent implements OnInit {
     }
   }
 
-  view(item: Complaint): void {
+  view(item: any): void {
     // TODO: Open detail view dialog/modal
-    console.log('View complaint:', item._id);
+    console.log('View complaint:', item.id);
   }
 
-  resolve(item: Complaint): void {
-    this.api.put<any>(`/complaints/${item._id}/resolve`).subscribe({
+  resolve(item: any): void {
+    this.api.put<any>(`/complaints/${item.id}/resolve`).subscribe({
       next: () => this.loadData()
     });
   }

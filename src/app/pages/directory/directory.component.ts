@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface DirectoryEntry {
-  _id: string;
-  name: string;
-  phone: string;
-  unit: string;
-  role: string;
-}
-
 @Component({
   selector: 'app-directory',
   standalone: true,
@@ -77,7 +69,7 @@ interface DirectoryEntry {
   `]
 })
 export class DirectoryComponent implements OnInit {
-  items: DirectoryEntry[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

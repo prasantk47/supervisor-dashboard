@@ -3,15 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Delivery {
-  _id: string;
-  type: string;
-  recipientName: string;
-  unit: string;
-  status: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-deliveries',
   standalone: true,
@@ -30,27 +21,31 @@ interface Delivery {
         <table *ngIf="!loading">
           <thead>
             <tr>
+              <th>Code</th>
               <th>Type</th>
-              <th>Recipient Name</th>
+              <th>Company</th>
+              <th>Delivery Person</th>
               <th>Unit</th>
               <th>Status</th>
-              <th>Created At</th>
+              <th>Created</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of items">
-              <td>{{ item.type }}</td>
-              <td>{{ item.recipientName }}</td>
-              <td>{{ item.unit }}</td>
+              <td>{{ item.deliveryCode || '-' }}</td>
+              <td>{{ item.deliveryType || item.type || '-' }}</td>
+              <td>{{ item.companyName || '-' }}</td>
+              <td>{{ item.deliveryPersonName || '-' }}</td>
+              <td>{{ item.unit?.name || '-' }}</td>
               <td><span class="badge" [ngClass]="'badge-' + item.status">{{ item.status }}</span></td>
               <td>{{ item.createdAt | date:'mediumDate' }}</td>
-              <td>
+              <td class="actions">
                 <button class="btn btn-success btn-sm" *ngIf="item.status === 'pending' || item.status === 'received'" (click)="handover(item)">Handover</button>
               </td>
             </tr>
             <tr *ngIf="items.length === 0">
-              <td colspan="6" class="empty">No deliveries found</td>
+              <td colspan="8" class="empty">No deliveries found</td>
             </tr>
           </tbody>
         </table>
@@ -74,16 +69,14 @@ interface Delivery {
     th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
     th { font-weight: 600; color: #666; background: #fafafa; }
     .badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .badge-active, .badge-approved, .badge-resolved, .badge-closed, .badge-checked_in, .badge-delivered { background: #e8f5e9; color: #2e7d32; }
-    .badge-pending, .badge-open, .badge-waiting, .badge-received { background: #fff3e0; color: #e65100; }
-    .badge-rejected, .badge-cancelled { background: #ffebee; color: #c62828; }
-    .badge-in_progress, .badge-acknowledged { background: #e3f2fd; color: #1565c0; }
+    .badge-delivered, .badge-handed_over { background: #e8f5e9; color: #2e7d32; }
+    .badge-pending, .badge-received { background: #fff3e0; color: #e65100; }
+    .badge-rejected, .badge-cancelled, .badge-returned { background: #ffebee; color: #c62828; }
+    .badge-in_transit { background: #e3f2fd; color: #1565c0; }
     .btn { padding: 4px 10px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; }
-    .btn-primary { background: #1a1a2e; color: #fff; }
     .btn-success { background: #4caf50; color: #fff; }
-    .btn-danger { background: #f44336; color: #fff; }
     .btn-sm { padding: 3px 8px; font-size: 11px; }
-    .btn + .btn { margin-left: 4px; }
+    .actions { white-space: nowrap; }
     .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 16px; }
     .pagination button { padding: 6px 14px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; }
     .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -92,7 +85,7 @@ interface Delivery {
   `]
 })
 export class DeliveriesComponent implements OnInit {
-  items: Delivery[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;
@@ -116,7 +109,7 @@ export class DeliveriesComponent implements OnInit {
     this.api.get<any>('/deliveries', params).subscribe({
       next: (res) => {
         this.items = res.data?.deliveries || res.data || [];
-        this.total = res.data?.total || this.items.length;
+        this.total = res.data?.pagination?.total || res.data?.total || this.items.length;
         this.totalPages = Math.ceil(this.total / this.limit);
         this.loading = false;
       },
@@ -142,8 +135,8 @@ export class DeliveriesComponent implements OnInit {
     }
   }
 
-  handover(item: Delivery): void {
-    this.api.put<any>(`/deliveries/${item._id}/handover`).subscribe({
+  handover(item: any): void {
+    this.api.put<any>(`/deliveries/${item.id}/handover`).subscribe({
       next: () => this.loadData()
     });
   }

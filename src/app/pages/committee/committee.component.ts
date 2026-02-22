@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface CommitteeMember {
-  _id: string;
-  name: string;
-  role: string;
-  phone: string;
-  status: string;
-}
-
 @Component({
   selector: 'app-committee',
   standalone: true,
@@ -81,7 +73,7 @@ interface CommitteeMember {
   `]
 })
 export class CommitteeComponent implements OnInit {
-  items: CommitteeMember[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

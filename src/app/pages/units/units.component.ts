@@ -3,15 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Unit {
-  _id: string;
-  name: string;
-  type: string;
-  floor: string;
-  ownerName: string;
-  occupancyStatus: string;
-}
-
 @Component({
   selector: 'app-units',
   standalone: true,
@@ -33,20 +24,24 @@ interface Unit {
               <th>Name</th>
               <th>Type</th>
               <th>Floor</th>
-              <th>Owner Name</th>
-              <th>Occupancy Status</th>
+              <th>Block</th>
+              <th>Owner</th>
+              <th>Tenant</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of items">
               <td>{{ item.name }}</td>
-              <td>{{ item.type }}</td>
-              <td>{{ item.floor }}</td>
-              <td>{{ item.ownerName }}</td>
-              <td><span class="badge" [ngClass]="'badge-' + item.occupancyStatus">{{ item.occupancyStatus }}</span></td>
+              <td>{{ item.type || '-' }}</td>
+              <td>{{ item.floor?.name || '-' }}</td>
+              <td>{{ item.floor?.block?.name || '-' }}</td>
+              <td>{{ item.owner ? (item.owner.firstName + ' ' + (item.owner.lastName || '')) : '-' }}</td>
+              <td>{{ item.tenant ? (item.tenant.firstName + ' ' + (item.tenant.lastName || '')) : '-' }}</td>
+              <td><span class="badge" [ngClass]="item.disabled ? 'badge-inactive' : (item.ownerId || item.tenantId ? 'badge-occupied' : 'badge-vacant')">{{ item.disabled ? 'Disabled' : (item.ownerId || item.tenantId ? 'Occupied' : 'Vacant') }}</span></td>
             </tr>
             <tr *ngIf="items.length === 0">
-              <td colspan="5" class="empty">No units found</td>
+              <td colspan="7" class="empty">No units found</td>
             </tr>
           </tbody>
         </table>
@@ -70,12 +65,9 @@ interface Unit {
     th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
     th { font-weight: 600; color: #666; background: #fafafa; }
     .badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .badge-occupied, .badge-active { background: #e8f5e9; color: #2e7d32; }
-    .badge-vacant, .badge-available { background: #fff3e0; color: #e65100; }
-    .badge-maintenance { background: #e3f2fd; color: #1565c0; }
-    .badge-pending { background: #fff3e0; color: #e65100; }
-    .btn { padding: 4px 10px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; }
-    .btn-primary { background: #1a1a2e; color: #fff; }
+    .badge-occupied { background: #e8f5e9; color: #2e7d32; }
+    .badge-vacant { background: #fff3e0; color: #e65100; }
+    .badge-inactive { background: #ffebee; color: #c62828; }
     .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 16px; }
     .pagination button { padding: 6px 14px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; }
     .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -84,7 +76,7 @@ interface Unit {
   `]
 })
 export class UnitsComponent implements OnInit {
-  items: Unit[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;
@@ -108,7 +100,7 @@ export class UnitsComponent implements OnInit {
     this.api.get<any>('/units', params).subscribe({
       next: (res) => {
         this.items = res.data?.units || res.data || [];
-        this.total = res.data?.total || this.items.length;
+        this.total = res.data?.pagination?.total || res.data?.total || this.items.length;
         this.totalPages = Math.ceil(this.total / this.limit);
         this.loading = false;
       },

@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Amenity {
-  _id: string;
-  name: string;
-  type: string;
-  status: string;
-  capacity: number;
-}
-
 @Component({
   selector: 'app-amenities',
   standalone: true,
@@ -81,7 +73,7 @@ interface Amenity {
   `]
 })
 export class AmenitiesComponent implements OnInit {
-  items: Amenity[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

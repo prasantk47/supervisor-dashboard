@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface PatrolRecord {
-  _id: string;
-  guardName: string;
-  checkpoint: string;
-  status: string;
-  time: string;
-}
-
 @Component({
   selector: 'app-patrol',
   standalone: true,
@@ -81,7 +73,7 @@ interface PatrolRecord {
   `]
 })
 export class PatrolComponent implements OnInit {
-  items: PatrolRecord[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

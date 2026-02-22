@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface ActivityLog {
-  _id: string;
-  user: string;
-  action: string;
-  entity: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-activity-logs',
   standalone: true,
@@ -77,7 +69,7 @@ interface ActivityLog {
   `]
 })
 export class ActivityLogsComponent implements OnInit {
-  items: ActivityLog[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

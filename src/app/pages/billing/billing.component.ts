@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface BillingRecord {
-  _id: string;
-  unitName: string;
-  amount: number;
-  dueDate: string;
-  paymentStatus: string;
-}
-
 @Component({
   selector: 'app-billing',
   standalone: true,
@@ -81,7 +73,7 @@ interface BillingRecord {
   `]
 })
 export class BillingComponent implements OnInit {
-  items: BillingRecord[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

@@ -3,14 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Incident {
-  _id: string;
-  title: string;
-  type: string;
-  status: string;
-  createdAt: string;
-}
-
 @Component({
   selector: 'app-incidents',
   standalone: true,
@@ -81,7 +73,7 @@ interface Incident {
   `]
 })
 export class IncidentsComponent implements OnInit {
-  items: Incident[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;

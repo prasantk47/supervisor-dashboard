@@ -3,15 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface Vehicle {
-  _id: string;
-  number: string;
-  type: string;
-  ownerName: string;
-  unit: string;
-  status: string;
-}
-
 @Component({
   selector: 'app-vehicles',
   standalone: true,
@@ -31,19 +22,19 @@ interface Vehicle {
           <thead>
             <tr>
               <th>Number</th>
+              <th>Name</th>
               <th>Type</th>
-              <th>Owner Name</th>
               <th>Unit</th>
-              <th>Status</th>
+              <th>Owner</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of items">
-              <td>{{ item.number }}</td>
-              <td>{{ item.type }}</td>
-              <td>{{ item.ownerName }}</td>
-              <td>{{ item.unit }}</td>
-              <td><span class="badge" [ngClass]="'badge-' + item.status">{{ item.status }}</span></td>
+              <td>{{ item.number || '-' }}</td>
+              <td>{{ item.name || '-' }}</td>
+              <td>{{ item.type || '-' }}</td>
+              <td>{{ item.rentalUnit?.name || '-' }}</td>
+              <td>{{ item.user ? (item.user.firstName + ' ' + (item.user.lastName || '')) : '-' }}</td>
             </tr>
             <tr *ngIf="items.length === 0">
               <td colspan="5" class="empty">No vehicles found</td>
@@ -69,16 +60,6 @@ interface Vehicle {
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
     th { font-weight: 600; color: #666; background: #fafafa; }
-    .badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .badge-active, .badge-approved, .badge-resolved, .badge-closed, .badge-checked_in, .badge-parked { background: #e8f5e9; color: #2e7d32; }
-    .badge-pending, .badge-open, .badge-waiting { background: #fff3e0; color: #e65100; }
-    .badge-rejected, .badge-cancelled, .badge-blacklisted { background: #ffebee; color: #c62828; }
-    .badge-in_progress, .badge-acknowledged { background: #e3f2fd; color: #1565c0; }
-    .btn { padding: 4px 10px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; }
-    .btn-primary { background: #1a1a2e; color: #fff; }
-    .btn-success { background: #4caf50; color: #fff; }
-    .btn-danger { background: #f44336; color: #fff; }
-    .btn-sm { padding: 3px 8px; font-size: 11px; }
     .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 16px; }
     .pagination button { padding: 6px 14px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; }
     .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -87,7 +68,7 @@ interface Vehicle {
   `]
 })
 export class VehiclesComponent implements OnInit {
-  items: Vehicle[] = [];
+  items: any[] = [];
   loading = false;
   search = '';
   page = 1;
@@ -111,7 +92,7 @@ export class VehiclesComponent implements OnInit {
     this.api.get<any>('/vehicles', params).subscribe({
       next: (res) => {
         this.items = res.data?.vehicles || res.data || [];
-        this.total = res.data?.total || this.items.length;
+        this.total = res.data?.pagination?.total || res.data?.total || this.items.length;
         this.totalPages = Math.ceil(this.total / this.limit);
         this.loading = false;
       },
